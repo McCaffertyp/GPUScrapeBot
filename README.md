@@ -6,7 +6,7 @@ Personal GPU Scraper I'm working on which will also have purchasing abilities mo
 1. Download the zip files from release
 2. Copy GPUScraper into the file you want
 3. Unzip the driver executables
-   - Or just the one you need
+   - Or just the one you need (chromedriver is included already)
 4. Place into GPUScraper/mccaffertyp/driver_executables
 5. Open a terminal in the folder (or cd into folder)
 6. Run with `python run_scraper.py`
