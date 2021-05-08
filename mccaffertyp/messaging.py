@@ -25,10 +25,13 @@ class Message:
         self.init_server()
 
     def init_server(self):
+        print("Starting server")
         self.server.starttls()  # Start server
+        print("Logging into server with {}".format(self.email))
         self.server.login(self.email, self.password)  # Login to server
 
     def send_message(self, status):
+        print(status)
         message = "<{}>\r{}".format(self.sender, status)
         self.server.sendmail(self.email, self.sms_gateway, message)
 
