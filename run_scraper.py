@@ -1,6 +1,10 @@
 from selenium import webdriver
 from pynput.keyboard import Listener
+from mccaffertyp import install_packages
 from mccaffertyp.gpu_scraper import GpuScraper
+
+# Install packages with pip3
+install_packages.install()
 
 # Variables
 user_email = ""

@@ -9,6 +9,9 @@ Personal GPU Scraper I'm working on which will also have purchasing abilities mo
 4. Run with `python run_scraper.py`
 5. Follow on-screen prompts
 
+Note: Packages should be downloaded with script, but may fail. In such case, either run again or
+manually install selenium and pynput for Python3
+
 ## Extra Information
 ### Browsers
 Currently, there are only three supported web browsers:
