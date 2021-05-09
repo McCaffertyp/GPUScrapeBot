@@ -3,14 +3,11 @@
 Personal GPU Scraper I'm working on which will also have purchasing abilities most likely near future
 
 ## How-To
-1. Download the zip files from release
-2. Copy GPUScraper into the file you want
-3. Unzip the driver executables
-   - Or just the one you need (chromedriver is included already)
-4. Place into GPUScraper/mccaffertyp/driver_executables
-5. Open a terminal in the folder (or cd into folder)
-6. Run with `python run_scraper.py`
-7. Follow on-screen prompts
+1. Download the source code folder from release
+2. Copy GPUScraper-<version> folder to desired location
+3. Open a terminal in the folder (or cd into folder)
+4. Run with `python run_scraper.py`
+5. Follow on-screen prompts
 
 Note: Packages should be downloaded with script, but may fail. In such case, either run again or
 manually install selenium and pynput for Python3
@@ -18,9 +15,9 @@ manually install selenium and pynput for Python3
 ## Extra Information
 ### Browsers
 Currently, there are only three supported web browsers:
-- Chrome (v90 only)
-- Firefox (v47 above (according to Google))
-- Opera (v90 only (based on chromedriver))
+- Chrome (v90 only - Windows, v88 only - Linux)
+- Firefox (v47 above (according to Google), xxx - Linux needs manual installation)
+- Opera (v90 only (based on chromedriver) - Windows, v90 only (based on chromedriver) - Linux)
 
 ### Carriers
 Similarly to Browsers, there are only four supported carriers currently:

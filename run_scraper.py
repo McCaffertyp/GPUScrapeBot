@@ -1,10 +1,17 @@
-from selenium import webdriver
-from pynput.keyboard import Listener
-from mccaffertyp import install_packages
-from mccaffertyp.gpu_scraper import GpuScraper
+import sys
+import subprocess
 
-# Install packages with pip3
-install_packages.install()
+try:
+    from selenium import webdriver
+except ImportError:
+    try:
+        subprocess.check_call([sys.executable, '-m', 'pip3', 'install', 'selenium'])
+    except subprocess.CalledProcessError:
+        print("Error running install command `pip3 install <package>`")
+finally:
+    from selenium import webdriver
+
+from mccaffertyp.gpu_scraper import GpuScraper
 
 # Variables
 user_email = ""
@@ -22,9 +29,14 @@ print("___________________________________________________")
 print()
 print("Please answer the following questions accurately :)")
 print()
+is_linux = input("Are you using a Linux computer (y/n)? ")
 user_wants_messages = input("Do you want text message notifications (y/n)? ")
 user_is_buying = input("Do you want the bot to buy for you (y/n)? ")
 
+if is_linux[0] == 'y' or is_linux[0] == 'Y':
+    is_linux = True
+else:
+    is_linux = False
 if user_wants_messages[0] == 'y' or user_wants_messages[0] == 'Y':
     user_wants_messages = True
 else:
@@ -40,7 +52,9 @@ if not user_wants_messages and not user_is_buying:
     exit(0)
 
 print("Enter the number of a following option for your browser choice:")
-print("1. Chrome (v90)\n2. Firefox (latest)\n3. Opera (v90)")
+print("1. Chrome (v90 - Windows, v88 - Linux)")
+print("2. Firefox (latest - Windows, Linux needs manual)")
+print("3. Opera (v90 - Windows, v88 - Linux)")
 user_browser = input("Browser choice: ")
 sleep_time_seconds = int(input("How often (in seconds) to check websites (default is 5 seconds; enter <1 to keep default)? "))
 if sleep_time_seconds < 1:
@@ -70,7 +84,7 @@ print("Thank you for using GPU Scraping Bot.\nHope you are satisfied with the re
 print()
 print("___________________________________________________")
 
-gpu_scraper = GpuScraper(webdriver, Listener, sleep_time_seconds, user_wants_messages, user_is_buying, user_browser,
+gpu_scraper = GpuScraper(is_linux, webdriver, sleep_time_seconds, user_wants_messages, user_is_buying, user_browser,
                          user_email, user_password, user_number, user_carrier, user_max_price,
                          user_debit_name, user_debit_number, user_debit_cv)
 gpu_scraper.run()
