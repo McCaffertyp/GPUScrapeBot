@@ -1,10 +1,11 @@
 import sys
 import time
+import platform
 from .messaging import Message
 
 # 05-07-2021 5:00:00 PM = 1620432000 seconds
 benchmark_time = 1620432000
-
+system = platform.system()
 websites = {
     "NewEgg": "https://www.newegg.com/p/pl?N=100007709%20601357247",
     "BestBuy": "https://www.bestbuy.com/site/searchpage.jsp?_dyncharset=UTF-8&id=pcat17071&iht=y&keys=keys&ks=960&list=n&qp=category_facet%3DGPUs%20%2F%20Video%20Graphics%20Cards~abcat0507002&sc=Global&st=rtx%203080&type=page&usc=All%20Categories"
@@ -23,8 +24,7 @@ def is_time_hour():
 
 
 class GpuScraper:
-    def __init__(self, is_linux, wb, sts, uwm, uib, ub, ue, up, un, uc, ump, udna, udnu, udcv):
-        self.is_linux = is_linux
+    def __init__(self, wb, sts, uwm, uib, ub, ue, up, un, uc, ump, udna, udnu, udcv):
         self.webdriver = wb
         self.sleep_time_seconds = sts
         self.user_wants_messages = uwm
@@ -46,7 +46,7 @@ class GpuScraper:
         browser_option = int(self.user_browser)
         path = "{}\\mccaffertyp\\driver_executables\\".format(sys.path[0])
         driver_extension = ".exe"
-        if self.is_linux:
+        if system == 'Linux':
             path = path.split("\\")
             path = "/".join(path)
             driver_extension = ""

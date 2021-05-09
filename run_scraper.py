@@ -29,14 +29,9 @@ print("___________________________________________________")
 print()
 print("Please answer the following questions accurately :)")
 print()
-is_linux = input("Are you using a Linux computer (y/n)? ")
 user_wants_messages = input("Do you want text message notifications (y/n)? ")
 user_is_buying = input("Do you want the bot to buy for you (y/n)? ")
 
-if is_linux[0] == 'y' or is_linux[0] == 'Y':
-    is_linux = True
-else:
-    is_linux = False
 if user_wants_messages[0] == 'y' or user_wants_messages[0] == 'Y':
     user_wants_messages = True
 else:
@@ -84,7 +79,7 @@ print("Thank you for using GPU Scraping Bot.\nHope you are satisfied with the re
 print()
 print("___________________________________________________")
 
-gpu_scraper = GpuScraper(is_linux, webdriver, sleep_time_seconds, user_wants_messages, user_is_buying, user_browser,
+gpu_scraper = GpuScraper(webdriver, sleep_time_seconds, user_wants_messages, user_is_buying, user_browser,
                          user_email, user_password, user_number, user_carrier, user_max_price,
                          user_debit_name, user_debit_number, user_debit_cv)
 gpu_scraper.run()
