@@ -79,11 +79,11 @@ class GpuScraper:
         check_time = 3600 - ((cur_time - benchmark_time) % 3600)
         print("Variable check_time currently at {}".format(check_time))
 
-        if check_time <= 60 and self.sent is False:
+        if check_time <= 30 and self.sent is False:
             self.sent = True
             return True
 
-        if check_time >= 3540:
+        if check_time >= 3570:
             self.sent = False
 
         return False
