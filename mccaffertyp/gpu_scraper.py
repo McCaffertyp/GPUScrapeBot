@@ -67,8 +67,8 @@ class GpuScraper:
         self.handles["Amazon"] = self.driver.window_handles[0]
         self.handles["BestBuy"] = self.driver.window_handles[1]
         self.handles["NewEgg"] = self.driver.window_handles[2]
-        print("Doing one time loading sleep for 15 seconds to ensure windows load")
-        time.sleep(15)
+        print("Doing one time loading sleep for 5 seconds to ensure windows have loaded")
+        time.sleep(5)
 
     def attempt_purchase(self):
         # TODO Run purchasing script here
@@ -77,13 +77,13 @@ class GpuScraper:
     def is_time_hour(self):
         cur_time = int(time.time())
         check_time = 3600 - ((cur_time - benchmark_time) % 3600)
-        print("Variable check_time currently at {}".format(check_time))
+        print("Variable `check_time` currently at {}".format(check_time))
 
-        if check_time <= 30 and self.sent is False:
+        if check_time >= 3570 and self.sent is False:
             self.sent = True
             return True
 
-        if check_time >= 3570:
+        if check_time <= 30:
             self.sent = False
 
         return False

@@ -43,7 +43,7 @@ class Message:
             return False
 
     def send_message(self, status):
-        print(status)
+        print("Current update being sent:\nstatus:{}".format(status))
         message = "<{}>\r{}".format(self.sender, status)
         try:
             self.server.sendmail(self.email, self.sms_gateway, message)
