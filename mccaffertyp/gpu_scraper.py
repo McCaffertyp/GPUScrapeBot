@@ -14,17 +14,6 @@ websites = {
 }
 
 
-def is_time_hour():
-    cur_time = int(time.time())
-    check_time = 3600 - ((cur_time - benchmark_time) % 3600)
-    print("Variable check_time currently at {}".format(check_time))
-
-    if check_time <= 60:
-        return True
-
-    return False
-
-
 class GpuScraper:
     def __init__(self, wb, sts, uwm, uib, ub, ue, up, un, uc, ump, udna, udnu, udcv):
         self.webdriver = wb
@@ -37,6 +26,7 @@ class GpuScraper:
         self.user_debit_number = udnu
         self.user_debit_cv = udcv
         self.msg = Message(ue, up, un, uc)
+        self.sent = False
         self.driver = self.get_driver()
         self.handles = {}
         self.out_of_stock = True
@@ -65,9 +55,14 @@ class GpuScraper:
     def init_window_handles(self):
         print("Initializing windows and handles")
         # Creating all the windows
+        # Doing a .get for each website to force wait for browser page to load
         self.driver.get(websites["Amazon"])
-        self.driver.execute_script("window.open('{}', 'BestBuy')".format(websites["BestBuy"]))
-        self.driver.execute_script("window.open('{}', 'NewEgg')".format(websites["NewEgg"]))
+        self.driver.execute_script("window.open('about:blank', 'BestBuy')")
+        self.driver.switch_to.window("BestBuy")
+        self.driver.get(websites["BestBuy"])
+        self.driver.execute_script("window.open('about:blank', 'NewEgg')")
+        self.driver.switch_to.window("NewEgg")
+        self.driver.get(websites["NewEgg"])
         # Adding all the handles to variable
         self.handles["Amazon"] = self.driver.window_handles[0]
         self.handles["BestBuy"] = self.driver.window_handles[1]
@@ -78,6 +73,20 @@ class GpuScraper:
     def attempt_purchase(self):
         # TODO Run purchasing script here
         self.purchased = True
+
+    def is_time_hour(self):
+        cur_time = int(time.time())
+        check_time = 3600 - ((cur_time - benchmark_time) % 3600)
+        print("Variable check_time currently at {}".format(check_time))
+
+        if check_time <= 60 and self.sent is False:
+            self.sent = True
+            return True
+
+        if check_time >= 3540:
+            self.sent = False
+
+        return False
 
     def reset(self):
         self.out_of_stock = True
@@ -113,7 +122,7 @@ class GpuScraper:
                 self.msg.send_message(status)
                 break
 
-            if is_time_hour():
+            if self.is_time_hour():
                 self.msg.send_message(status)
 
             print("Sleeping for {} second(s)".format(self.sleep_time_seconds), end="", flush=True)
