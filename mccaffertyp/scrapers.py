@@ -25,6 +25,7 @@ class Scrapers:
                     items_in_stock.append("{} RTX 3080 in stock at Best Buy for {}".format(item_title, item_price))
 
                     out_of_stock = False
+
                 except Exception:
                     # Item price is only shown on Amazon if it's in stock, so when the item price is not there
                     # the assumption is that it's not in stock. But this would throw an exception, so just catch

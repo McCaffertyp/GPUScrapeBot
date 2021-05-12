@@ -7,7 +7,7 @@ except ImportError:
     try:
         subprocess.check_call([sys.executable, '-m', 'pip3', 'install', 'selenium'])
     except subprocess.CalledProcessError:
-        print("Error running install command `pip3 install <package>`")
+        print("Error running install command `pip3 install selenium`")
 finally:
     from selenium import webdriver
 
@@ -19,9 +19,6 @@ user_password = ""
 user_number = ""
 user_carrier = ""
 user_max_price = ""
-user_debit_name = ""
-user_debit_number = ""
-user_debit_cv = ""
 
 
 # Actually run the program and print out the prompts
@@ -30,18 +27,13 @@ print()
 print("Please answer the following questions accurately :)")
 print()
 user_wants_messages = input("Do you want text message notifications (y/n)? ")
-user_is_buying = input("Do you want the bot to buy for you (y/n)? ")
 
 if user_wants_messages[0] == 'y' or user_wants_messages[0] == 'Y':
     user_wants_messages = True
 else:
     user_wants_messages = False
-if user_is_buying[0] == 'y' or user_is_buying[0] == 'Y':
-    user_is_buying = True
-else:
-    user_is_buying = False
 
-if not user_wants_messages and not user_is_buying:
+if not user_wants_messages:
     print("Why did you even want to use this bot then?")
     print("I'm outta here")
     exit(0)
@@ -70,23 +62,12 @@ if user_wants_messages:
     user_hourly = input("Opting out of below would still allow product in stock updates.\nWould you like hourly updates (y/n)? ")
     if user_hourly[0] == 'y' or user_hourly[0] == 'Y':
         user_hourly = True
-    if user_is_buying:
-        user_max_price = int(input("What is your max price? "))
-        user_debit_name = input("What is the name on your card? ")
-        user_debit_number = input("What is your card number? ")
-        user_debit_cv = input("What is the cv number? ")
-else:
-    user_max_price = int(input("What is your max price? "))
-    user_debit_name = input("What is the name on your card? ")
-    user_debit_number = input("What is your card number? ")
-    user_debit_cv = input("What is the cv number? ")
 
 print()
 print("Thank you for using GPU Scraping Bot.\nHope you are satisfied with the results :)")
 print()
 print("___________________________________________________")
 
-gpu_scraper = GpuScraper(webdriver, sleep_time_seconds, user_wants_messages, user_is_buying, user_browser,
-                         user_email, user_password, user_number, user_carrier, user_max_price,
-                         user_debit_name, user_debit_number, user_debit_cv)
+gpu_scraper = GpuScraper(webdriver, sleep_time_seconds, user_wants_messages, user_browser,
+                         user_email, user_password, user_number, user_carrier, user_max_price)
 gpu_scraper.run()

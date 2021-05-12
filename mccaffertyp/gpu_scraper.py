@@ -4,7 +4,7 @@ import platform
 from .scrapers import Scrapers
 from .messaging import Message
 
-# 05-07-2021 5:00:00 PM = 1620432000 seconds
+# 05-07-2021 5:00:00 PM PST = 1620432000 seconds
 benchmark_time = 1620432000
 system = platform.system()
 websites = {
@@ -15,16 +15,12 @@ websites = {
 
 
 class GpuScraper:
-    def __init__(self, wb, sts, uwm, uib, ub, ue, up, un, uc, ump, udna, udnu, udcv):
+    def __init__(self, wb, sts, uwm, ub, ue, up, un, uc, ump):
         self.webdriver = wb
         self.sleep_time_seconds = sts
         self.user_wants_messages = uwm
-        self.user_is_buying = uib
         self.user_browser = ub
         self.user_max_price = ump
-        self.user_debit_name = udna
-        self.user_debit_number = udnu
-        self.user_debit_cv = udcv
         self.msg = Message(ue, up, un, uc)
         self.sent = False
         self.driver = self.get_driver()
@@ -32,7 +28,6 @@ class GpuScraper:
         self.out_of_stock = True
         self.items_in_stock = []
         self.item_status = "out of stock"
-        self.purchased = False
 
     def get_driver(self):
         browser_option = int(self.user_browser)
@@ -70,10 +65,6 @@ class GpuScraper:
         print("Doing one time loading sleep for 5 seconds to ensure windows have loaded")
         time.sleep(5)
 
-    def attempt_purchase(self):
-        # TODO Run purchasing script here
-        self.purchased = True
-
     def is_time_hour(self):
         cur_time = int(time.time())
         check_time = 3600 - ((cur_time - benchmark_time) % 3600)
@@ -101,36 +92,31 @@ class GpuScraper:
         scrapers = Scrapers(self.driver, self.handles)
 
         while True:
-            status = "All items are out of stock"
-            self.out_of_stock, self.items_in_stock = scrapers.scrape_amazon(self.items_in_stock)
-            self.out_of_stock, self.items_in_stock = scrapers.scrape_best_buy(self.items_in_stock)
-            self.out_of_stock, self.items_in_stock = scrapers.scrape_new_egg(self.items_in_stock)
+            try:
+                status = "All items are out of stock"
+                self.out_of_stock, self.items_in_stock = scrapers.scrape_amazon(self.items_in_stock)
+                self.out_of_stock, self.items_in_stock = scrapers.scrape_best_buy(self.items_in_stock)
+                self.out_of_stock, self.items_in_stock = scrapers.scrape_new_egg(self.items_in_stock)
 
-            if not self.out_of_stock:
-                status = "There are {} items in stock.\rSending as separate texts.".format(len(self.items_in_stock))
-                self.msg.send_message(status)
+                if not self.out_of_stock:
+                    status = "There are {} items in stock.\rSending as separate texts.".format(len(self.items_in_stock))
+                    self.msg.send_message(status)
 
-                for item in self.items_in_stock:
-                    self.msg.send_message(item)
-                    if self.user_is_buying:
-                        self.attempt_purchase()
-                        if self.purchased:
-                            break
+                    for item in self.items_in_stock:
+                        self.msg.send_message(item)
 
-            if self.purchased:
-                status = "A GPU has been successfully purchased. I suggest you not run my program again."
-                self.msg.send_message(status)
+                if self.is_time_hour():
+                    self.msg.send_message(status)
+
+                print("Sleeping for {} second(s)".format(self.sleep_time_seconds), end="", flush=True)
+                for i in range(10):
+                    print(".", end="", flush=True)
+                    time.sleep(self.sleep_time_seconds / 10)
+                print()
+                self.reset()
+
+            except KeyboardInterrupt:  # Catch Ctrl+C pressed
                 break
-
-            if self.is_time_hour():
-                self.msg.send_message(status)
-
-            print("Sleeping for {} second(s)".format(self.sleep_time_seconds), end="", flush=True)
-            for i in range(10):
-                print(".", end="", flush=True)
-                time.sleep(self.sleep_time_seconds / 10)
-            print()
-            self.reset()
 
         print("Done with scraping\nq=Quitting", end="", flush=True)
         for i in range(3):
