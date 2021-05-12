@@ -25,6 +25,7 @@ class Message:
         self.smtp = "smtp.gmail.com"
         self.port = 587
         self.server = None
+        self.retry = True
         self.smtp_connect()
 
     def smtp_connect(self):
@@ -43,7 +44,7 @@ class Message:
             return False
 
     def send_message(self, status):
-        print("Current update being sent:\nstatus:{}".format(status))
+        print("Current update being sent - \nstatus: {}".format(status))
         message = "<{}>\r{}".format(self.sender, status)
         try:
             self.server.sendmail(self.email, self.sms_gateway, message)
@@ -64,13 +65,22 @@ class Message:
             print("Attempting to send message again through address {}...".format(self.email))
             print("Will try three extra attempts:")
             for i in range(3):
-                print("Attempt: {}".format(i))
+                print("Attempt: {}".format(i + 1))
                 try:
                     self.server.sendmail(self.email, self.sms_gateway, message)
                     print("Message successful. Continuing")
                     break
                 except smtplib.SMTPSenderRefused:
                     print("Failed. Retrying")
+
+        except BrokenPipeError as error:
+            print("BrokenPipeError occurred: {}".format(error))
+            if self.retry:
+                print("Retrying send_message() operation")
+                self.send_message(status)
+            else:
+                print("Operation failure with BrokenPipeError. Please restart the program for messaging.")
+                exit(0)
 
     def quit_server(self):
         self.server.quit()
