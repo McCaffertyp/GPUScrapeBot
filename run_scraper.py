@@ -51,9 +51,16 @@ print("1. Chrome (v90 - Windows, v88 - Linux)")
 print("2. Firefox (latest - Windows, Linux needs manual)")
 print("3. Opera (v90 - Windows, v88 - Linux)")
 user_browser = input("Browser choice: ")
-sleep_time_seconds = int(input("How often (in seconds) to check websites (default is 5 seconds; enter <1 to keep default)? "))
-if sleep_time_seconds < 1:
-    sleep_time_seconds = 5
+print("Check websites info:")
+print("Default value is 5 seconds. Enter any number <= 0 for default. Decimals are supported")
+print("Highest allowed is 30 (otherwise checking becomes not often enough)")
+sleep_time_seconds = float(input("In seconds, how often should I check websites? "))
+if sleep_time_seconds <= 0.0:
+    print("Using default value of 5.0 seconds")
+    sleep_time_seconds = 5.0
+elif sleep_time_seconds > 30.0:
+    print("Value was greater than 30.0 - using 30.0 seconds")
+    sleep_time_seconds = 30.0
 
 if user_wants_messages:
     user_email = input("What is your gmail (Must be gmail)? ")
