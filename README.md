@@ -4,7 +4,7 @@ Personal GPU Scraper I'm working on which will also have purchasing abilities mo
 
 ## How-To
 1. Download the source code folder from release
-2. Copy GPUScraper-<version> folder to desired location
+2. Copy GPUScrapeBot-x.x.x folder to desired location
 3. Open a terminal in the folder (or cd into folder)
 4. Run with `python run_scraper.py`
 5. Follow on-screen prompts
