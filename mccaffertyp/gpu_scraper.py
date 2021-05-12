@@ -118,10 +118,11 @@ class GpuScraper:
             except KeyboardInterrupt:  # Catch Ctrl+C pressed
                 break
 
-        print("Done with scraping\nq=Quitting", end="", flush=True)
-        for i in range(3):
+        print("\nDone with scraping\nQuitting", end="", flush=True)
+        for i in range(5):
             print(".", end="", flush=True)
             time.sleep(1)
+        print("\n\n")
 
         self.msg.quit_server()
         exit(0)
