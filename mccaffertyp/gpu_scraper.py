@@ -1,14 +1,16 @@
 import sys
 import time
 import platform
+from .scrapers import Scrapers
 from .messaging import Message
 
 # 05-07-2021 5:00:00 PM = 1620432000 seconds
 benchmark_time = 1620432000
 system = platform.system()
 websites = {
-    "NewEgg": "https://www.newegg.com/p/pl?N=100007709%20601357247",
-    "BestBuy": "https://www.bestbuy.com/site/searchpage.jsp?_dyncharset=UTF-8&id=pcat17071&iht=y&keys=keys&ks=960&list=n&qp=category_facet%3DGPUs%20%2F%20Video%20Graphics%20Cards~abcat0507002&sc=Global&st=rtx%203080&type=page&usc=All%20Categories"
+    "Amazon": "https://www.amazon.com/s?k=rtx+3080&i=computers&rh=n%3A284822%2Cp_72%3A1248879011&dc&qid=1620768618&rnid=1248877011&ref=sr_pg_1",
+    "BestBuy": "https://www.bestbuy.com/site/searchpage.jsp?_dyncharset=UTF-8&id=pcat17071&iht=y&keys=keys&ks=960&list=n&qp=category_facet%3DGPUs%20%2F%20Video%20Graphics%20Cards~abcat0507002&sc=Global&st=rtx%203080&type=page&usc=All%20Categories",
+    "NewEgg": "https://www.newegg.com/p/pl?N=100007709%20601357247"
 }
 
 
@@ -62,60 +64,16 @@ class GpuScraper:
 
     def init_window_handles(self):
         print("Initializing windows and handles")
-        self.driver.get(websites["NewEgg"])
-        self.handles["NewEgg"] = self.driver.window_handles[0]
-        self.driver.execute_script("window.open('{}', 'new window')".format(websites["BestBuy"]))
+        # Creating all the windows
+        self.driver.get(websites["Amazon"])
+        self.driver.execute_script("window.open('{}', 'BestBuy')".format(websites["BestBuy"]))
+        self.driver.execute_script("window.open('{}', 'NewEgg')".format(websites["NewEgg"]))
+        # Adding all the handles to variable
+        self.handles["Amazon"] = self.driver.window_handles[0]
         self.handles["BestBuy"] = self.driver.window_handles[1]
+        self.handles["NewEgg"] = self.driver.window_handles[2]
         print("Doing one time loading sleep for 15 seconds to ensure windows load")
-        time.sleep(15)  # One time load to ensure windows properly load in
-
-    def scrape_new_egg(self):
-        print("Scraping NewEgg...")
-        self.item_status = "OUT OF STOCK"
-        self.driver.switch_to.window(self.handles["NewEgg"])
-        try:
-            item_status_elements = self.driver.find_elements_by_class_name('item-promo')
-            item_name_elements = self.driver.find_elements_by_class_name('item-title')
-            item_price_elements = self.driver.find_elements_by_class_name('price-current')
-
-            for i in range(len(item_status_elements)):
-                if self.item_status != item_status_elements[i].text:
-                    self.out_of_stock = False
-
-                    item_title = item_name_elements[i].text.partition(' ')[0]
-                    item_price = item_price_elements[i].text
-                    self.items_in_stock.append("{} RTX 3080 in stock at NewEgg for {}".format(item_title, item_price))
-
-            if self.out_of_stock:
-                print("NewEgg Status: All items currently out of stock")
-        except Exception as error:
-            print("Error occurred grabbed elements: {}".format(error))
-            print("Attempting scrape again")
-            self.scrape_new_egg()
-
-    def scrape_best_buy(self):
-        print("Scraping Best Buy...")
-        self.item_status = "Sold Out"
-        self.driver.switch_to.window(self.handles["BestBuy"])
-        try:
-            item_status_elements = self.driver.find_elements_by_class_name('add-to-cart-button')
-            item_name_elements = self.driver.find_elements_by_class_name('sku-header')
-            item_price_elements = self.driver.find_elements_by_class_name('priceView-customer-price')
-
-            for i in range(len(item_status_elements)):
-                if self.item_status != item_status_elements[i].text:
-                    self.out_of_stock = False
-
-                    item_title = item_name_elements[i].text.partition(' ')[0]
-                    item_price = item_price_elements[i].find_element_by_tag_name('span').text
-                    self.items_in_stock.append("{} RTX 3080 in stock at Best Buy for {}".format(item_title, item_price))
-
-            if self.out_of_stock:
-                print("Best Buy status: All items currently out of stock")
-        except Exception as error:
-            print("Error occurred grabbed elements: {}".format(error))
-            print("Attempting scrape again")
-            self.scrape_best_buy()
+        time.sleep(15)
 
     def attempt_purchase(self):
         # TODO Run purchasing script here
@@ -124,7 +82,6 @@ class GpuScraper:
     def reset(self):
         self.out_of_stock = True
         self.items_in_stock = []
-        self.item_status = "out of stock"
 
     def run(self):
         print()
@@ -132,11 +89,13 @@ class GpuScraper:
         print()
 
         self.init_window_handles()
+        scrapers = Scrapers(self.driver, self.handles)
 
         while True:
             status = "All items are out of stock"
-            self.scrape_new_egg()
-            self.scrape_best_buy()
+            self.out_of_stock, self.items_in_stock = scrapers.scrape_amazon(self.items_in_stock)
+            self.out_of_stock, self.items_in_stock = scrapers.scrape_best_buy(self.items_in_stock)
+            self.out_of_stock, self.items_in_stock = scrapers.scrape_new_egg(self.items_in_stock)
 
             if not self.out_of_stock:
                 status = "There are {} items in stock.\rSending as separate texts.".format(len(self.items_in_stock))
